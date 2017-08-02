@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 public class FileUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
-	
 
 	/**
 	 * 
@@ -20,26 +19,26 @@ public class FileUtils {
 	public static void moveFiles(String startPath, String destPath, boolean recursive) throws UpdateFileException {
 		try {
 			LOG.info("Starting Copying");
-			if (!destPath.endsWith("\\")){
+			if (!destPath.endsWith("\\")) {
 				destPath = destPath + "\\";
 			}
 			File file = new File(startPath);
 			List<File> fileList = new ArrayList<File>();
 			LOG.info("Is Directory :" + file.isDirectory());
-			if (file.isDirectory()){
+			if (file.isDirectory()) {
 				fileList.addAll(getFilesFromDir(file, recursive));
 			} else {
 				fileList.add(file);
 			}
 			LOG.info("List Size :" + fileList.size());
-			for (File moveFile : fileList){
+			for (File moveFile : fileList) {
 				String fName = moveFile.getPath();
 				fName = fName.substring(3);
 				File newFile = new File(destPath + fName);
-				if (moveFile.isDirectory()){
+				if (moveFile.isDirectory()) {
 					newFile.mkdirs();
 					LOG.info("Making Dir :" + newFile.getName());
-				} else if (moveFile.isFile()){
+				} else if (moveFile.isFile()) {
 					LOG.info("Moving File :" + newFile.getName());
 					moveFile.renameTo(newFile);
 					LOG.info("Moved");
@@ -47,88 +46,96 @@ public class FileUtils {
 			}
 			File oldDir = new File(startPath);
 			deleteFoldersFromDir(oldDir);
-			
+
 			LOG.info("Finished Moving " + fileList.size() + " Files!");
-		} catch (Exception e){
+		} catch (Exception e) {
 			throw new UpdateFileException(e);
 		}
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param file - Directory to get files from.
+	 * @param file
+	 *            - Directory to get files from.
 	 * @return List of Files within that directory and all sub directories.
 	 */
-	public static List<File> getFilesFromDir(File file, boolean recursive){
-		List<File> list = new ArrayList<File>();
-		File[] files = file.listFiles();
-		if (files != null){
-			LOG.info("Number of Files :" + files.length);
-			for (int i = 0; i < files.length; i++){
-				if (files[i].isFile()){
-					list.add(files[i]);
-					LOG.info("Adding File :" + files[i].getName());
-				} else if (recursive) {
-					list.add(files[i]);
-					LOG.info("Sub Dir :" + files[i].getName());
-					list.addAll(getFilesFromDir(files[i], recursive));;
+	public static List<File> getFilesFromDir(File file, boolean recursive) {
+		final List<File> list = new ArrayList<File>();
+
+		if (file.isDirectory()) {
+			final File[] files = file.listFiles();
+			if (files != null) {
+				LOG.info("Number of Files :" + files.length);
+				for (File fileItem : files) {
+					if (fileItem.isFile()) {
+						list.add(fileItem);
+						LOG.info("Adding File :" + fileItem.getName());
+					} else if (recursive) {
+						list.add(fileItem);
+						LOG.info("Sub Dir :" + fileItem.getName());
+						list.addAll(getFilesFromDir(fileItem, recursive));
+					}
 				}
 			}
 		}
 		return list;
 	}
-	
+
 	/**
 	 * 
-	 * @param file - Directory to get files from.
+	 * @param file
+	 *            - Directory to get files from.
 	 * @return List of Files within that directory and all sub directories.
-	 * @throws UpdateFileException 
+	 * @throws UpdateFileException
 	 */
-	public static void deleteFoldersFromDir(File file) throws UpdateFileException{
+	public static void deleteFoldersFromDir(File file) throws UpdateFileException {
 		try {
 			File[] files = file.listFiles();
-			if (files != null){
-				for (int i = 0; i < files.length; i++){
-					if (files[i].listFiles().length != 0){
-						LOG.info("Sub Dir :" + files[i].getName());
-						deleteFoldersFromDir(files[i]);
+			if (files != null) {
+				for (final File fileItem : files) {
+					if (fileItem.listFiles().length != 0) {
+						LOG.info("Sub Dir :" + fileItem.getName());
+						deleteFoldersFromDir(fileItem);
 					} else {
-						LOG.info("Dir :" + files[i].getName());
-						files[i].delete();
+						LOG.info("Dir :" + fileItem.getName());
+						fileItem.delete();
 					}
 				}
 			}
 			file.delete();
-		} catch (Exception e){
-			throw new UpdateFileException("Given String does not exist as either a File or Directory"); 
+		} catch (Exception e) {
+			throw new UpdateFileException("Given String does not exist as either a File or Directory");
 		}
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param path - Directory of the files you want to be changed.
-	 * @param startTrim - The number of characters at the start of the File name you want removing.
-	 * @param endTrim - The number of characters from the end of the File name you want removing.
-	 * @throws UpdateFileException 
+	 * @param path
+	 *            - Directory of the files you want to be changed.
+	 * @param startTrim
+	 *            - The number of characters at the start of the File name you
+	 *            want removing.
+	 * @param endTrim
+	 *            - The number of characters from the end of the File name you
+	 *            want removing.
+	 * @throws UpdateFileException
 	 */
 	public static int updateFileNames(String path, boolean uppercaseify) throws UpdateFileException {
 		File file = new File(path);
-		int fileNum = 0;
-		if (file.exists()){
+		int fileNum = 1;
+		if (file.exists()) {
 			if (file.isDirectory()) {
-				if (!path.endsWith("\\")){
+				if (!path.endsWith("\\")) {
 					path = path + "\\";
 				}
-				File[] files =  file.listFiles();
-				for (int i = 0; i < files.length; i++) {
-					if (files[i].isFile()){
-						String fName = getFileName(files[i], uppercaseify);
+				File[] files = file.listFiles();
+				for (final File fileItem : files) {
+					if (fileItem.isFile()) {
+						String fName = getFileName(fileItem, uppercaseify);
 						LOG.info("Multiple Files :" + path + fName);
-						fileNum = i + 1;
 						LOG.info("File Number: " + fileNum);
-						files[i].renameTo(new File(path + fName));
+						fileNum = fileNum + 1;
+						fileItem.renameTo(new File(path + fName));
 					}
 				}
 			} else if (file.isFile()) {
@@ -144,12 +151,17 @@ public class FileUtils {
 		}
 		return fileNum;
 	}
-	
+
 	/**
 	 * 
-	 * @param file - The File to trim the name of.
-	 * @param startTrim - The number of characters at the start of the File name you want removing.
-	 * @param endTrim - The number of characters from the end of the File name you want removing.
+	 * @param file
+	 *            - The File to trim the name of.
+	 * @param startTrim
+	 *            - The number of characters at the start of the File name you
+	 *            want removing.
+	 * @param endTrim
+	 *            - The number of characters from the end of the File name you
+	 *            want removing.
 	 * @return The end File name with Extension.
 	 */
 	private static String getFileName(final File file, boolean uppercaseify) {
@@ -168,9 +180,9 @@ public class FileUtils {
 			}
 			fName = String.valueOf(characters);
 		}
-		
+
 		fName = (fName.substring(0, fName.length() - extension.length()).trim() + extension);
 		return fName;
 	}
-	
+
 }
