@@ -1,6 +1,6 @@
-package com.home.filescrubber;
+package com.home.filenamecleaner;
 
-import com.home.filescrubber.FileNameScrubber;
+import com.home.filenamecleaner.FileNameScrubber;
 
 public class StartUp {
 

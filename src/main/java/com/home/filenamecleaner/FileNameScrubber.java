@@ -1,4 +1,4 @@
-package com.home.filescrubber;
+package com.home.filenamecleaner;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

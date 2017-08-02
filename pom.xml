@@ -4,7 +4,7 @@
 	<groupId>com.home</groupId>
 	<artifactId>filescrubber</artifactId>
 	<version>0.0.1</version>
-	<name>FileScrubber</name>
+	<name>FileNameCleaner</name>
 	<packaging>jar</packaging>
 
 	<properties>
